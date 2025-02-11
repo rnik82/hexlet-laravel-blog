@@ -11,6 +11,14 @@
     <script src="{{ asset('js/app.js') }}"></script>
 </head>
 <body>
+<!-- BEGIN (начало моего эксперимента) -->
+<div class="mt-4">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <!-- BEGIN (write your solution here) -->
+    <!-- END -->
+</div>
+<!-- END (конец моего эксперимента) -->
 <div class="container mt-4">
     <h1>@yield('header')</h1>
     <div>
