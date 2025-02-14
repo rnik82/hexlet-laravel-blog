@@ -110,23 +110,33 @@ string(29) "select * from "users" limit 1"
 ### Заметки
 
 Выборка из БД:
+```
 $articles = Article::where('state', 'published')->orderBy('likes_count', 'desc')->get();
 $articles = Article::where('name', 'ilike', "%{$q}%")->get() или Article::where('name', 'ilike', "%{$q}%")->paginate()
 $articles = Article::all() или Article::paginate()
+```
 
 Ссылка:
+```
 <a href="{{ route('article_categories.index') }}">Категории статей</a>
+```
 
 Как работает compact():
+```
 $category = ...;
 $articles = ...;
 compact('category', 'articles'); // -> ['category' => $category, 'articles' => $articles]
+```
 
 Достаем то что ищется:
+```
 $q = $request->input('q', '');
+```
 
 Поисковая форма (q - то что нужно найти в поисковике):
+```
 {{  html()->form('GET', route('articles.index'))->open() }}
     {{  html()->input('text', 'q', $q) }}
     {{  html()->submit('Search') }}
 {{ html()->form()->close() }}
+```
