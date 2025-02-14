@@ -30,6 +30,7 @@
                         <div class="mt-4">
                             <a href="/">Home</a>
                             <a href="/about">About</a>
+                            <a href="{{ route('articles.index') }}">Articles</a>
                         </div>
                         <!-- END (конец моего эксперимента) -->
                         <div class="flex lg:justify-center lg:col-start-2">
