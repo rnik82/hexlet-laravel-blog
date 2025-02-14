@@ -29,38 +29,79 @@ You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you
 
 If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Создание проекта на Laravel из командной строки
+Проекты на Laravel создаются из командной строки. Проще всего создать новый проект с помощью команды composer create-project
+Перейдите в домашнюю директорию и выполните команду
+```bash
+composer create-project --prefer-dist laravel/laravel hexlet-laravel-blog
+```
+Эта команда создаст приложение в директории hexlet-laravel-blog и установит все зависимости, необходимые для работы Laravel.
 
-### Premium Partners
+## Как запустить сайт в режиме разработки:
+```bash
+$ php artisan serve
+Laravel development server started: <http://127.0.0.1:8000>
+```
+Эта команда запускает встроенный в PHP веб-сервер и настраивает его для работы с Laravel по указанному адресу
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Как создать Модель через утилиту artisan:
+```bash
+$ php artisan make:model <Model_name> --migration // Model_name - напр. Article
 
-## Contributing
+Model created successfully.
+Created Migration: 2020_03_21_220908_create_articles_table
+```
+Этот вызов создаст два файла:
+- миграцию в директории database/migrations
+- класс (модель) с именем Article в директории app/Models
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Затем нужно накатить миграции:
+```bash
+$ php artisan migrate
+```
+Если нужно откатить (отменить последнюю миграцию):
+```bash
+$ php artisan migrate:rollback
+```
 
-## Code of Conduct
+## Контроллеры, так же как и модели, можно генерировать через artisan:
+```bash
+$ php artisan make:controller PageController // или любое нужное имя
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Controller created successfully.
+```
 
-## Security Vulnerabilities
+## Как посмотреть поля таблицы через tinker (командную строку):
+```bash
+$ php artisan tinker
+Psy Shell v0.12.7 (PHP 8.3.11 — cli) by Justin Hileman
+>>> DB::getSchemaBuilder()->getColumnListing('имя таблицы')  // напр. article_categories
+= [
+"id",
+"name",
+"description",
+"state",
+"created_at",
+"updated_at",
+:
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Или вот так:
+Зайти в REPL, извлечь первую сущность нужной модели и распечатать ее
+```bash
+$ php artisan tinker
+>>> $u = \App\Models\User::first() // вместо User — ArticleCategory в нашем случае
+>>> $u->toArray()
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+string(29) "select * from "users" limit 1"
+=> [
+"id" => 1,
+"email" => "streich.viva@example.net",
+"first_name" => "Tatum",
+"last_name" => "Hudson",
+"password" => "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+"created_at" => "2020-03-21 19:31:38",
+"updated_at" => "2020-03-21 19:31:38",
+]
+```
