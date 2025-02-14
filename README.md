@@ -30,13 +30,13 @@ You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you
 If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
 
-### Создание проекта на Laravel из командной строки
-Проекты на Laravel создаются из командной строки. Проще всего создать новый проект с помощью команды composer create-project
-Перейдите в домашнюю директорию и выполните команду
+## Создание проекта на Laravel из командной строки
+Проекты на Laravel создаются из командной строки. Проще всего создать новый проект с помощью команды composer create-project.
+Для этого нужно перейти в домашнюю директорию и выполните команду
 ```bash
-composer create-project --prefer-dist laravel/laravel hexlet-laravel-blog
+composer create-project --prefer-dist laravel/laravel <dir_name> // напр. - hexlet-laravel-blog
 ```
-Эта команда создаст приложение в директории hexlet-laravel-blog и установит все зависимости, необходимые для работы Laravel.
+Создастся приложение в директории hexlet-laravel-blog и установятся все зависимости, необходимые для работы Laravel
 
 ## Как запустить сайт в режиме разработки:
 ```bash
@@ -105,3 +105,28 @@ string(29) "select * from "users" limit 1"
 "updated_at" => "2020-03-21 19:31:38",
 ]
 ```
+
+
+### Заметки
+
+Выборка из БД:
+$articles = Article::where('state', 'published')->orderBy('likes_count', 'desc')->get();
+$articles = Article::where('name', 'ilike', "%{$q}%")->get() или Article::where('name', 'ilike', "%{$q}%")->paginate()
+$articles = Article::all() или Article::paginate()
+
+Ссылка:
+<a href="{{ route('article_categories.index') }}">Категории статей</a>
+
+Как работает compact():
+$category = ...;
+$articles = ...;
+compact('category', 'articles'); // -> ['category' => $category, 'articles' => $articles]
+
+Достаем то что ищется:
+$q = $request->input('q', '');
+
+Поисковая форма (q - то что нужно найти в поисковике):
+{{  html()->form('GET', route('articles.index'))->open() }}
+    {{  html()->input('text', 'q', $q) }}
+    {{  html()->submit('Search') }}
+{{ html()->form()->close() }}
