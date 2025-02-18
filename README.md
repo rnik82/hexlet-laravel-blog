@@ -140,3 +140,50 @@ $q = $request->input('q', '');
     {{  html()->submit('Search') }}
 {{ html()->form()->close() }}
 ```
+
+Вот так в обработчике store делается валидация и сохранение:
+```
+public function store(Request $request)
+{
+    // Проверка введенных данных
+    // Если будут ошибки, то возникнет исключение
+    // Иначе возвращаются данные формы
+    $data = $request->validate([
+        'name' => 'required|max:100',
+        'description' => 'required|min:200',
+        'state' => 'in:draft,published'
+    ]);
+    
+    $category = new ArticleCategory();
+    // Заполнение статьи данными из формы
+    $category->fill($data);
+    // При ошибках сохранения возникнет исключение
+    $category->save();
+    // Добавляем флеш сообщение, если нужно
+    $request->session()->flash('success', 'The article was successfully added!');
+
+    // Редирект на указанный маршрут
+    return redirect()
+        ->route('articles.index');
+    }
+```
+либо
+```
+public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|unique:article_categories|max:100',
+        'description' => 'required|min:200',
+        'state' => [
+            Rule::in(['draft', 'published']),
+        ]
+    ]);
+
+    $category = new ArticleCategory();
+    $category->fill($request->all());
+    $category->save();
+
+    return redirect()
+        ->route('article_categories.index');
+}
+```

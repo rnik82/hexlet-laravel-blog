@@ -18,13 +18,21 @@ Route::get('articles', [ArticleController::class, 'index'])
     ->name('articles.index'); // имя маршрута, нужно для того, чтобы не создавать ссылки руками
 
 // Маршрут для отображения формы. Важно добавить этот маршрут до маршрута articles/{id}.
-// Иначе последний перехватит обращение к articles/create, так как он соответствует шаблону.
+//// Иначе последний перехватит обращение к articles/create, так как он соответствует шаблону.
 Route::get('articles/create', [ArticleController::class, 'create'])
     ->name('articles.create');
 
 Route::get('articles/{id}', [ArticleController::class, 'show'])
     ->name('articles.show');
 
-// Маршрут для обработки формы (POST-запрос)
+// Маршрут для обработки и сохранения формы.
 Route::post('articles', [ArticleController::class, 'store'])
     ->name('articles.store');
+
+// Маршрут для отображения формы редактирования
+Route::get('articles/{id}/edit', [ArticleController::class, 'edit'])
+    ->name('articles.edit');
+
+// Маршрут для сохранения изменений после редактирования
+Route::patch('articles/{id}', [ArticleController::class, 'update'])
+    ->name('articles.update');

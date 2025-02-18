@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Http\Requests\StorePostRequest;
 
 class ArticleController extends Controller
 {
@@ -35,25 +36,48 @@ class ArticleController extends Controller
     }
 
     // Здесь нам понадобится объект запроса для извлечения данных
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
         // Проверка введенных данных
         // Если будут ошибки, то возникнет исключение
         // Иначе возвращаются данные формы
-        $data = $request->validate([
-            'name' => 'required|unique:articles',
-            'body' => 'required|min:1000',
-        ]);
+//        $data = $request->validate([
+//            'name' => 'required|unique:articles',
+//            'body' => 'required|min:100',
+//        ]);
 
         $article = new Article();
         // Заполнение статьи данными из формы
-        $article->fill($data);
+        $article->fill($request->all()); // fill($data)
         // При ошибках сохранения возникнет исключение
         $article->save();
         // Добавляем флеш сообщение
         $request->session()->flash('success', 'The article was successfully added!');
 
         // Редирект на указанный маршрут
+        return redirect()
+            ->route('articles.index');
+    }
+
+    public function edit($id)
+    {
+        $article = Article::findOrFail($id);
+        return view('article.edit', compact('article'));
+    }
+
+    public function update(StorePostRequest $request, $id)
+    {
+        $article = Article::findOrFail($id);
+        //$data = $request->validate([
+            // У обновления немного измененная валидация
+            // В проверку уникальности добавляется название поля и id текущего объекта
+            // Если этого не сделать, Laravel будет ругаться, что имя уже существует
+            //'name' => "required|unique:articles,name,{$article->id}",
+            //'body' => 'required|min:100',
+        //]);
+        $article->fill($request->all());
+        $article->save();
+        $request->session()->flash('success', 'The article was successfully updated!');
         return redirect()
             ->route('articles.index');
     }
