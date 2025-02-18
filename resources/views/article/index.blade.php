@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+    @if(session('success'))
+        <ul class="alert alert-success">
+            <li> {{ session('success') }} </li>
+        </ul>
+    @endif
+    <small><a href="{{ route('articles.create') }}">Добавить новую статью</a></small>
     <h1>Список статей</h1>
     @foreach ($articles as $article)
         <h2>
