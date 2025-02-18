@@ -110,31 +110,31 @@ string(29) "select * from "users" limit 1"
 ### Заметки
 
 Выборка из БД:
-```
+```php
 $articles = Article::where('state', 'published')->orderBy('likes_count', 'desc')->get();
 $articles = Article::where('name', 'ilike', "%{$q}%")->get() или Article::where('name', 'ilike', "%{$q}%")->paginate()
 $articles = Article::all() или Article::paginate()
 ```
 
 Ссылка:
-```
+```php
 <a href="{{ route('article_categories.index') }}">Категории статей</a>
 ```
 
 Как работает compact():
-```
+```php
 $category = ...;
 $articles = ...;
 compact('category', 'articles'); // -> ['category' => $category, 'articles' => $articles]
 ```
 
 Достаем то что ищется:
-```
+```php
 $q = $request->input('q', '');
 ```
 
 Поисковая форма (q - то что нужно найти в поисковике):
-```
+```php
 {{  html()->form('GET', route('articles.index'))->open() }}
     {{  html()->input('text', 'q', $q) }}
     {{  html()->submit('Search') }}
@@ -142,7 +142,7 @@ $q = $request->input('q', '');
 ```
 
 Вот так в обработчике store делается валидация и сохранение:
-```
+```php
 public function store(Request $request)
 {
     // Проверка введенных данных
@@ -168,7 +168,7 @@ public function store(Request $request)
     }
 ```
 либо
-```
+```php
 public function store(Request $request)
 {
     $request->validate([
@@ -185,5 +185,31 @@ public function store(Request $request)
 
     return redirect()
         ->route('article_categories.index');
+}
+```
+
+Валидации в store и update повторяются практически один в один.
+Для того, чтобы избежать дублирования можно использовать [Form Request Validation](https://laravel.com/docs/11.x/validation#form-request-validation):
+```bash
+php artisan make:request StoreArticleRequest
+```
+```php
+class StoreArticleRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'name' => "required|unique:articles,name,{$this->id}",
+            'body' => 'required|min:100',
+        ];
+    }
 }
 ```
