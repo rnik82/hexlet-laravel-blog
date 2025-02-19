@@ -155,7 +155,7 @@ public function store(Request $request)
     ]);
     
     $category = new ArticleCategory();
-    // Заполнение статьи данными из формы
+    // Данные обновляются в объекте статьи с помощью метода fill 
     $category->fill($data);
     // При ошибках сохранения возникнет исключение
     $category->save();
@@ -180,6 +180,7 @@ public function store(Request $request)
     ]);
 
     $category = new ArticleCategory();
+    // Данные обновляются в объекте статьи с помощью метода fill
     $category->fill($request->all());
     $category->save();
 
@@ -213,3 +214,29 @@ class StoreArticleRequest extends FormRequest
     }
 }
 ```
+
+# Избежать ручного создания формы удаления (как и реализовано в данном проекте) можно с помощью библиотеки jquery-ujs.
+# Она опирается на data-атрибуты и сама превращает в форму все что ее попросят.
+Для ее установки нужно установить Node.js.
+Установка Node.js на Ubuntu через командную строку:
+```bash
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - &&\
+sudo apt-get install -y nodejs
+```
+Установка npm, установка зависимости jquery-ujs, установка остальных пакетов:
+```bash
+sudo apt install npm
+npm install @rails/ujs
+npm install
+```
+Затем добавьте в конец файла resources/js/app.js строчки:
+```JavaScript
+import ujs from '@rails/ujs';
+ujs.start();
+```
+Затем нужно запустить сборку фронтенда:
+```bash
+npm run dev
+```
+
+

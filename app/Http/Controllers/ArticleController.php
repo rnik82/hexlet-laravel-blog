@@ -81,4 +81,18 @@ class ArticleController extends Controller
         return redirect()
             ->route('articles.index');
     }
+
+    // Нужно помнить про авторизацию (здесь не рассматривается)
+    // Удаление должно быть доступно только тем, кто может его выполнять
+    public function destroy($id)
+    {
+        // DELETE — идемпотентный метод, поэтому результат операции всегда один и тот же
+        $article = Article::find($id);
+        if ($article) {
+            $article->delete();
+        }
+        //$request->session()->flash('success', 'The article was successfully deleted!');
+        return redirect()->route('articles.index')
+            ->with('success', 'The article was successfully deleted!');
+    }
 }

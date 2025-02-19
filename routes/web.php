@@ -11,7 +11,8 @@ Route::get('/', function () {
     //return 'hello, world!';
 });
 
-Route::get('about', [PageController::class, 'about']);
+Route::get('about', [PageController::class, 'about'])
+    ->name('about'); ;
 
 // Название сущности в URL во множественном числе, контроллер в единственном
 Route::get('articles', [ArticleController::class, 'index'])
@@ -36,3 +37,7 @@ Route::get('articles/{id}/edit', [ArticleController::class, 'edit'])
 // Маршрут для сохранения изменений после редактирования
 Route::patch('articles/{id}', [ArticleController::class, 'update'])
     ->name('articles.update');
+
+// Маршрут для удаления статьи
+Route::delete('articles/{id}', [ArticleController::class, 'destroy'])
+    ->name('articles.destroy');
