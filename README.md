@@ -7,28 +7,12 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+#### php-laravel-blog
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
+Приложение работает похожим образом с https://php-laravel-blog.hexlet.app/.
+Это учебный проект, поэтому по сравнению в демо-проектом выше он оформлен более просто.
+При создании упор был сделан на бэкенд части.
+Ниже приведены основные этапы создания и тонкости организации кода.
 
 ## Создание проекта на Laravel из командной строки
 Проекты на Laravel создаются из командной строки. Проще всего создать новый проект с помощью команды composer create-project.
@@ -215,8 +199,8 @@ class StoreArticleRequest extends FormRequest
 }
 ```
 
-# Избежать ручного создания формы удаления (как и реализовано в данном проекте) можно с помощью библиотеки jquery-ujs.
-# Она опирается на data-атрибуты и сама превращает в форму все что ее попросят.
+### Избежать ручного создания формы удаления (как и реализовано в данном проекте) можно с помощью библиотеки jquery-ujs.
+### Она опирается на data-атрибуты и сама превращает в форму все что ее попросят.
 Для ее установки нужно установить Node.js.
 Установка Node.js на Ubuntu через командную строку:
 ```bash
@@ -239,4 +223,63 @@ ujs.start();
 npm run dev
 ```
 
+## [Resource Controllers](https://laravel.com/docs/11.x/controllers#resource-controllers) - Ресурсная маршрутизация
+Она упрощает создание типичных CRUD, за счет полной унификации всех маршрутов и способов их обработки.
+Вместо описания 7 разных маршрутов, ресурсная маршрутизация позволяет указать один метамаршрут:
+```php
+<?php
+Route::resource('articles', ArticleController::class);
+```
+Внутри себя он превращается в те самые семь маршрутов CRUD. Их можно увидеть с помощью команды artisan:
+```bash
+php artisan route:list
 
++-----------+-------------------------+------------------+---------+
+| Method    | URI                     | Name             | Action  |
++-----------+-------------------------+------------------+---------+
+| GET|HEAD  | /                       |                  | Closure |
+| GET|HEAD  | articles                | articles.index   | index   |
+| POST      | articles                | articles.store   | store   |
+| GET|HEAD  | articles/create         | articles.create  | create  |
+| GET|HEAD  | articles/{article}      | articles.show    | show    |
+| PUT|PATCH | articles/{article}      | articles.update  | update  |
+| DELETE    | articles/{article}      | articles.destroy | destroy |
+| GET|HEAD  | articles/{article}/edit | articles.edit    | edit    |
++-----------+-------------------------+------------------+---------+
+# Имя плейсхолдера article, а не id
+```
+Следующий шаг – упрощение контроллера. Первое - можно сразу сгенерировать контроллер, со всеми нужными обработчиками.
+Второе - этот контроллер можно интегрировать с нужной моделью:
+```bash
+php artisan make:controller ArticleController --resource --model Article
+```
+При необходимости можно вот так сгенерировать вложенный ресурс автоматически:
+```bash
+php artisan make:controller ArticleCommentController --resource --model ArticleComment --parent Article
+```
+1. php artisan make:controller - команда для создания контроллера
+2. ArticleCommentController - название контроллера, который будет создан
+3. --resource - опция указывает, что контроллер будет ресурсным, что автоматически добавит методы для работы с ресурсами (CRUD операции)
+4. --model ArticleComment - опция указывает, что контроллер будет связан с моделью ArticleComment
+5. --parent Article - опция указывает, что модель ArticleComment будет иметь родительскую модель Article
+
+Например, вот так выглядит ресурс комментарии к статьям:
+```php
+Route::resource('articles.comments', ArticleCommentController::class);
+```
+Для вложенного ресурса, в экшены, кроме самой сущности передается и родительская сущность:
+```php
+# /articles/{article}/comments/{comment}
+# Обе сущности можно получить через параметры
+public function edit(Article $article, ArticleComment $comment)
+{
+    return view('article_comment.edit', compact('article', 'comment'));
+}
+```
+Если ресурс называется articles.comments, то параметр следует назвать $comment, а не $articleComment. 
+Другими словами, имя параметра выбирается в единственном числе по имени ресурса.
+
+Немного по-другому начинает работать хелпер route. Для построения ссылок, там где участвуют оба ресурса, нужно использовать массив для их передачи:
+```php
+route('articles.comments.edit', [$article, $comment]);
+```

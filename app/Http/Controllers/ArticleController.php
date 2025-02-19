@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Article;
+use Illuminate\Http\Request;
 use App\Http\Requests\StorePostRequest;
 
 class ArticleController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         // Извлекаем статьи с учетом запрошенной страницы. Laravel автоматически определяет
@@ -21,13 +24,9 @@ class ArticleController extends Controller
         return view('article.index', compact('articles'));
     }
 
-    public function show($id)
-    {
-        $article = Article::findOrFail($id);
-        return view('article.show', compact('article'));
-    }
-
-    // Вывод формы
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         // Передаем в шаблон вновь созданный объект. Он нужен для вывода формы
@@ -35,7 +34,9 @@ class ArticleController extends Controller
         return view('article.create', compact('article'));
     }
 
-    // Здесь нам понадобится объект запроса для извлечения данных
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(StorePostRequest $request)
     {
         // Проверка введенных данных
@@ -59,15 +60,30 @@ class ArticleController extends Controller
             ->route('articles.index');
     }
 
-    public function edit($id)
+    /**
+     * Display the specified resource.
+     */
+    public function show(Article $article)
     {
-        $article = Article::findOrFail($id);
+        $article = Article::findOrFail($article->id);
+        return view('article.show', compact('article'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Article $article)
+    {
+        $article = Article::findOrFail($article->id);
         return view('article.edit', compact('article'));
     }
 
-    public function update(StorePostRequest $request, $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(StorePostRequest $request, Article $article)
     {
-        $article = Article::findOrFail($id);
+        $article = Article::findOrFail($article->id);
         //$data = $request->validate([
             // У обновления немного измененная валидация
             // В проверку уникальности добавляется название поля и id текущего объекта
@@ -82,12 +98,13 @@ class ArticleController extends Controller
             ->route('articles.index');
     }
 
-    // Нужно помнить про авторизацию (здесь не рассматривается)
-    // Удаление должно быть доступно только тем, кто может его выполнять
-    public function destroy($id)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Article $article)
     {
         // DELETE — идемпотентный метод, поэтому результат операции всегда один и тот же
-        $article = Article::find($id);
+        $article = Article::find($article->id);
         if ($article) {
             $article->delete();
         }
